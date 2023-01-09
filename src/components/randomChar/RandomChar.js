@@ -1,5 +1,6 @@
 import { Component } from "react";
 import Spinner from "../spiner/spinner";
+import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../../services/MarvelService";
 
 import "./randomChar.scss";
@@ -14,6 +15,7 @@ class RandomChar extends Component {
   state = {
     char: {},
     loading: true,
+    error: false,
   };
 
   marvelService = new MarvelService(); // чтобы работать с классами нужно создать его новый екзэмпляр
@@ -22,17 +24,35 @@ class RandomChar extends Component {
     this.setState({ char, loading: false }); //({ char: char, loading: false }); когда данные загрузились loading = изменится на  false
   };
 
+  // отлов ошибки!!!
+  onError = () => {
+    this.setState({
+      loading: false,
+      error: true,
+    });
+  };
+
   updateChar = () => {
     const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000); //random id
-    this.marvelService.getCharacter(id).then(this.onCharLoaded);
+    this.marvelService
+      .getCharacter(id)
+      .then(this.onCharLoaded)
+      .catch(this.onError);
   };
 
   render() {
-    const { char, loading } = this.state;
+    const { char, loading, error } = this.state;
+
+    // распредиление что и как загружать на страницу(одновр может быть что-то одно)
+    const errorMessage = error ? <ErrorMessage /> : null;
+    const spinner = loading ? <Spinner /> : null;
+    const content = !(loading || error) ? <View char={char} /> : null; // НЕ loading и НЕ ошибка тогда = контент
 
     return (
       <div className="randomchar">
-        {loading ? <Spinner /> : <View char={char} />}
+        {errorMessage}
+        {spinner}
+        {content}
         <div className="randomchar__static">
           <p className="randomchar__title">
             Random character for today!

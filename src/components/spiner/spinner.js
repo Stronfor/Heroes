@@ -1,4 +1,4 @@
-import spinnerImg from "../../resources/img/356.gif";
+import spinnerImg from "./356.gif";
 const Spinner = () => {
   return (
     // <svg
@@ -61,7 +61,13 @@ const Spinner = () => {
     <img
       src={spinnerImg}
       alt="spinner"
-      style={{ margin: "0 auto", background: "none", display: "block" }}
+      style={{
+        margin: "0 auto",
+        background: "none",
+        display: "block",
+        width: "125px",
+        height: "125px",
+      }}
     />
   );
 };
