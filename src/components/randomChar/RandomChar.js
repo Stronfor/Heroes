@@ -7,16 +7,23 @@ import "./randomChar.scss";
 import mjolnir from "../../resources/img/mjolnir.png";
 
 class RandomChar extends Component {
-  constructor(props) {
-    super(props);
-    this.updateChar(); //чтобы при запуске вызвался метод и показал перса(но это ОЧЕНЬ плохая практика. вызов метода в конструкторе (которого еще не существует))
-  }
-
   state = {
     char: {},
     loading: true,
     error: false,
   };
+
+  componentDidMount() {
+    this.updateChar();
+
+    this.timerId = setInterval(this.updateChar, 25000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
+  ////////////////////////////
 
   marvelService = new MarvelService(); // чтобы работать с классами нужно создать его новый екзэмпляр
 
