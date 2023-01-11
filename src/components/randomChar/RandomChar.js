@@ -16,7 +16,7 @@ class RandomChar extends Component {
   componentDidMount() {
     this.updateChar();
 
-    this.timerId = setInterval(this.updateChar, 25000);
+    //this.timerId = setInterval(this.updateChar, 25000);
   }
 
   componentWillUnmount() {
@@ -47,6 +47,10 @@ class RandomChar extends Component {
       .catch(this.onError);
   };
 
+  onUpdateChar = () => {
+    this.state.error ? this.setState({ error: false }) : this.updateChar();
+  };
+
   render() {
     const { char, loading, error } = this.state;
 
@@ -68,7 +72,9 @@ class RandomChar extends Component {
           </p>
           <p className="randomchar__title">Or choose another one</p>
           <button className="button button__main">
-            <div className="inner">try it</div>
+            <div onClick={this.onUpdateChar} className="inner">
+              try it
+            </div>
           </button>
           <img src={mjolnir} alt="mjolnir" className="randomchar__decoration" />
         </div>
