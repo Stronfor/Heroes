@@ -86,9 +86,19 @@ class RandomChar extends Component {
 // рендорящий компонент(в нем нет никакой логики)
 const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki } = char;
+
+  // фикс бага для залушки без картинки (вписать в блок методом изменением стилей)
+  const imgStyle = thumbnail.slice(-23, -4) === "image_not_available";
+  const style = imgStyle ? { objectFit: "contain" } : null;
+
   return (
     <div className="randomchar__block">
-      <img src={thumbnail} alt="Random character" className="randomchar__img" />
+      <img
+        src={thumbnail}
+        alt="Random character"
+        style={style}
+        className="randomchar__img"
+      />
       <div className="randomchar__info">
         <p className="randomchar__name">{name}</p>
         <p className="randomchar__descr">{description}</p>
