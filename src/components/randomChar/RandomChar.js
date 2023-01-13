@@ -88,15 +88,19 @@ const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki } = char;
 
   // фикс бага для залушки без картинки (вписать в блок методом изменением стилей)
-  const imgStyle = thumbnail.slice(-23, -4) === "image_not_available";
-  const style = imgStyle ? { objectFit: "contain" } : null;
-
+  let imgStyle = { objectFit: "cover" };
+  if (
+    thumbnail ===
+    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
+  ) {
+    imgStyle = { objectFit: "contain" };
+  }
   return (
     <div className="randomchar__block">
       <img
         src={thumbnail}
         alt="Random character"
-        style={style}
+        style={imgStyle}
         className="randomchar__img"
       />
       <div className="randomchar__info">
