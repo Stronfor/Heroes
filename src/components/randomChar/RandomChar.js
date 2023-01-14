@@ -1,5 +1,5 @@
 import { Component } from "react";
-import Spinner from "../spiner/spinner";
+import Spinner from "../spinner/spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 import MarvelService from "../../services/MarvelService";
 
