@@ -85,10 +85,19 @@ class CharInfo extends Component {
 // так как СЛИШКОМ много верстки ДЕЛИМ ее не 2 компонента. 1 - отвечает за ЛОГИКУ. 2 - ЗА отображение
 const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki, comics } = char;
+
+  let styleImg = { objectFit: "cover" };
+  if (
+    thumbnail ===
+    "http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg"
+  ) {
+    styleImg = { objectFit: "unset" };
+  }
+
   return (
     <>
       <div className="char__basics">
-        <img src={thumbnail} alt={name} />
+        <img src={thumbnail} alt={name} style={styleImg} />
         <div>
           <div className="char__info-name">{name}</div>
           <div className="char__btns">
@@ -104,8 +113,15 @@ const View = ({ char }) => {
       <div className="char__descr">{description}</div>
       <div className="char__comics">Comics:</div>
       <ul className="char__comics-list">
-        {comics.map((item) => {
-          return <li className="char__comics-item">{item}</li>;
+        {comics.lenght > 0 ? null : "There is no comics with this character"}
+        {comics.map((item, i) => {
+          // eslint-disable-next-line
+          if (i > 9) return;
+          return (
+            <li className="char__comics-item" key={i}>
+              {item.name}
+            </li>
+          );
         })}
       </ul>
     </>
