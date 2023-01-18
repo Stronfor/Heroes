@@ -1,4 +1,6 @@
 import { Component } from "react";
+import PropTypes from "prop-types";
+
 import MarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/spinner";
 import ErrorrMessage from "../errorMessage/ErrorMessage";
@@ -72,7 +74,7 @@ class CharInfo extends Component {
     const content = !(error || loading || !char) ? <View char={char} /> : null;
 
     return (
-      <div className="char__info">
+      <div ref={this.charInfoRef} className="char__info">
         {skeleton}
         {errorMessage}
         {spinner}
@@ -126,6 +128,10 @@ const View = ({ char }) => {
       </ul>
     </>
   );
+};
+
+CharInfo.propTypes = {
+  charId: PropTypes.number,
 };
 
 export default CharInfo;
