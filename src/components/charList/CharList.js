@@ -61,8 +61,30 @@ class CharList extends Component {
     });
   };
 
+  //focus + active class + focus for TAB
+  itemRefs = [];
+
+  setRef = (ref) => {
+    this.itemRefs.push(ref);
+  };
+
+  focusOnItem = (id) => {
+    // Я реализовал вариант чуть сложнее, и с классом и с фокусом
+    // Но в теории можно оставить только фокус, и его в стилях использовать вместо класса
+    // На самом деле, решение с css-классом можно сделать, вынеся персонажа
+    // в отдельный компонент. Но кода будет больше, появится новое состояние
+    // и не факт, что мы выиграем по оптимизации за счет бОльшего кол-ва элементов
+
+    // По возможности, не злоупотребляйте рефами, только в крайних случаях
+    this.itemRefs.forEach((item) =>
+      item.classList.remove("char__item_selected")
+    );
+    this.itemRefs[id].classList.add("char__item_selected");
+    this.itemRefs[id].focus();
+  };
+
   renderItems = (arr) => {
-    const items = arr.map((item) => {
+    const items = arr.map((item, i) => {
       let imgStyle = { objectFit: "cover" };
       if (
         item.thumbnail ===
@@ -73,9 +95,20 @@ class CharList extends Component {
 
       return (
         <li
+          ref={this.setRef}
+          tabIndex={0}
           className="char__item"
           key={item.id}
-          onClick={() => this.props.onCharSelected(item.id)} //функция пришла из App компонента
+          onClick={() => {
+            this.props.onCharSelected(item.id); //функция пришла из App компонента
+            this.focusOnItem(i);
+          }}
+          onKeyPress={(e) => {
+            if (e.key === " " || e.key === "Enter") {
+              this.props.onCharSelected(item.id);
+              this.focusOnItem(i);
+            }
+          }}
         >
           <img src={item.thumbnail} alt={item.name} style={imgStyle} />
           <div className="char__name">{item.name}</div>
