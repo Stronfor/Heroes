@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import MarvelService from "../../services/MarvelService";
@@ -8,80 +8,65 @@ import Skeleton from "../skeleton/Skeleton";
 
 import "./charInfo.scss";
 
-class CharInfo extends Component {
-  state = {
-    char: null,
-    loading: false,
-    error: false,
-  };
+const CharInfo = (props) => {
 
-  componentDidMount() {
-    this.updateChar(); //ставица для страховки(так как начнет грузится только по клику) вдруг кто-то изменит state вручную
-  }
+  const [char, setChar] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
-  componentDidUpdate(prevProps, prevState) {
-    //получает предв. пропси и состояние как аргументы
-    if (this.props.charId !== prevProps.charId) {
-      //если новый пропс не равен старому
-      this.updateChar();
-    }
-  }
+  useEffect(()=> {
+    updateChar();
+    console.log('EFECT', props.charId);
+    
+  }, [props.charId]);
 
-  ////
 
-  marvelService = new MarvelService();
+  const marvelService = new MarvelService();
 
-  updateChar = () => {
-    const { charId } = this.props; // вытащили id из props
+  const updateChar = () => {
+    const { charId } = props; // вытащили id из props
 
     if (!charId) return; //если вдруг ID нет
 
-    this.onCharLoading(); // SPINNER
+    onCharLoading(); // SPINNER
 
-    this.marvelService
+    marvelService
       .getCharacter(charId)
-      .then(this.onCharLoaded)
-      .catch(this.onError);
+      .then(onCharLoaded)
+      .catch(onError);
   };
 
   //загрузка данных перса в state: char
-  onCharLoaded = (char) => {
-    this.setState({ char, loading: false });
+  const onCharLoaded = (char) => {
+    setChar(char);
+    setLoading(false);
   };
 
   // метод для отображенния спинера при нажатии кнопки
-  onCharLoading = () => {
-    this.setState({
-      loading: true,
-    });
+  const onCharLoading = () => {
+    setLoading(true);
   };
 
   // отлов ошибки!!!
-  onError = () => {
-    this.setState({
-      loading: false,
-      error: true,
-    });
+  const onError = () => {
+    setLoading(false);
+    setError(true);
   };
 
-  render() {
-    const { char, loading, error } = this.state;
+  const skeleton = char || loading || error ? null : <Skeleton />; // заглушка на всякий случай
 
-    const skeleton = char || loading || error ? null : <Skeleton />; // заглушка на всякий случай
+  const errorMessage = error ? <ErrorrMessage /> : null;
+  const spinner = loading ? <Spinner /> : null;
+  const content = !(error || loading || !char) ? <View char={char} /> : null;
 
-    const errorMessage = error ? <ErrorrMessage /> : null;
-    const spinner = loading ? <Spinner /> : null;
-    const content = !(error || loading || !char) ? <View char={char} /> : null;
-
-    return (
-      <div ref={this.charInfoRef} className="char__info">
-        {skeleton}
-        {errorMessage}
-        {spinner}
-        {content}
-      </div>
-    );
-  }
+  return (
+    <div className="char__info">
+      {skeleton}
+      {errorMessage}
+      {spinner}
+      {content}
+    </div>
+  );
 }
 
 // так как СЛИШКОМ много верстки ДЕЛИМ ее не 2 компонента. 1 - отвечает за ЛОГИКУ. 2 - ЗА отображение
