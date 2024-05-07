@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/spinner";
 import ErrorrMessage from "../errorMessage/ErrorMessage";
 import Skeleton from "../skeleton/Skeleton";
@@ -10,9 +10,9 @@ import "./charInfo.scss";
 
 const CharInfo = (props) => {
 
+  const {loading, error, getCharacter, clearError} = useMarvelService();
+
   const [char, setChar] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
 
   useEffect(()=> {
     updateChar();
@@ -21,36 +21,20 @@ const CharInfo = (props) => {
   }, [props.charId]);
 
 
-  const marvelService = new MarvelService();
 
   const updateChar = () => {
     const { charId } = props; // вытащили id из props
 
     if (!charId) return; //если вдруг ID нет
 
-    onCharLoading(); // SPINNER
-
-    marvelService
-      .getCharacter(charId)
+    clearError();
+    getCharacter(charId)
       .then(onCharLoaded)
-      .catch(onError);
   };
 
   //загрузка данных перса в state: char
   const onCharLoaded = (char) => {
     setChar(char);
-    setLoading(false);
-  };
-
-  // метод для отображенния спинера при нажатии кнопки
-  const onCharLoading = () => {
-    setLoading(true);
-  };
-
-  // отлов ошибки!!!
-  const onError = () => {
-    setLoading(false);
-    setError(true);
   };
 
   const skeleton = char || loading || error ? null : <Skeleton />; // заглушка на всякий случай

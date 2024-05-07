@@ -2,39 +2,31 @@ import "./charList.scss";
 import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
-import MarvelService from "../../services/MarvelService";
+import useMarvelService from "../../services/MarvelService";
 import Spinner from "../spinner/spinner";
 import ErrorMessage from "../errorMessage/ErrorMessage";
 
 const CharList = (props) => {
   
   const [charList, setCharList] = useState([]);
-  const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [newItemLoading, setNewItemLoading] = useState(false); // loading new characters for click LOADING MORE
   const [offset, setOffset] = useState(210); // от этого числа отталкиваюсь при подгрузке новых персов
   const [charEnded, setCharEnded] = useState(false); //отслежка окончания массива с персами на сервере
-  
-  
 
-  const marvelService = new MarvelService();
+  const {loading, error, getAllCharacters} = useMarvelService();
 
   useEffect(() => {
-    onRequest();
+    onRequest(offset, true);
   }, []);
 
   ///////////////
 
   // click for button LOAD MORE
-  const onRequest = (offset) => {
-    onCharListLoading();
-    marvelService.getAllCharacters(offset)
+  const onRequest = (offset, initial) => {
+    initial ? setNewItemLoading(false) : setNewItemLoading(true);
+    
+    getAllCharacters(offset)
       .then(onCharListLoaded)
-      .catch(onError);
-  };
-
-  const onCharListLoading = () => {
-    setNewItemLoading(true);
   };
 
   const onCharListLoaded = (newCharList) => {
@@ -44,16 +36,10 @@ const CharList = (props) => {
     }
 
     setCharList(charList => [...charList, ...newCharList]);
-    setLoading(false);
     setNewItemLoading(false);
     setOffset(offset => offset + 9);
     setCharEnded(charEnded => ended)
 
-  };
-
-  const onError = () => {
-    setError(true);
-    setLoading(false)
   };
 
   //focus + active class + focus for TAB
@@ -113,17 +99,17 @@ const CharList = (props) => {
   const items = renderItems(charList);
 
   const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(error || loading) ? items : null;
+  const spinner = loading && !newItemLoading ? <Spinner /> : null;
+
   return (
     <div className="char__list">
       {errorMessage}
       {spinner}
-      {content}
+      {items}
       <button
         className="button button__main button__long"
         disabled={newItemLoading}
-        onClick={() => onRequest(offset)} //стрелочная функция для того чтобы можнобыло передать аргумент!!
+        onClick={() => onRequest(offset, false)} //стрелочная функция для того чтобы можнобыло передать аргумент!!
         style={{ display: charEnded ? "none" : "block" }} //исчезнет кнопка после того как персы на серве закончатся
       >
         <div className="inner">load more</div>
