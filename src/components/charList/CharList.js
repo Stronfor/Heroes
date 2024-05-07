@@ -17,6 +17,8 @@ const CharList = (props) => {
 
   useEffect(() => {
     onRequest(offset, true);
+    console.log('CHAR');
+    
   }, []);
 
   ///////////////
@@ -35,7 +37,7 @@ const CharList = (props) => {
       ended = true;
     }
 
-    setCharList(charList => [...charList, ...newCharList]);
+    setCharList([...charList, ...newCharList]);
     setNewItemLoading(false);
     setOffset(offset => offset + 9);
     setCharEnded(charEnded => ended)
@@ -60,7 +62,7 @@ const CharList = (props) => {
     itemRefs.current[id].focus();
   };
 
-  function renderItems(arr) {
+  const renderItems = (arr) => {
     const items = arr.map((item, i) => {
       let imgStyle = { objectFit: "cover" };
       if (

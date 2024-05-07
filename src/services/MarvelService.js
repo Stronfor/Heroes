@@ -21,6 +21,12 @@ const useMarvelService = () => {
       wiki: char.urls[1].url,
       id: char.id,
       comics: char.comics.items,
+      comicsId: char.comics.items.map(item => {
+          const res = item.resourceURI.match(/\d+$/)
+          if(!res) return "-"
+          return res[0]
+        })
+      
     };
   };
 

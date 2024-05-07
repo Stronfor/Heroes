@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
@@ -16,7 +17,7 @@ const CharInfo = (props) => {
 
   useEffect(()=> {
     updateChar();
-    console.log('EFECT', props.charId);
+    console.log('CharInfo', props.charId);
     
   }, [props.charId]);
 
@@ -55,7 +56,7 @@ const CharInfo = (props) => {
 
 // так как СЛИШКОМ много верстки ДЕЛИМ ее не 2 компонента. 1 - отвечает за ЛОГИКУ. 2 - ЗА отображение
 const View = ({ char }) => {
-  const { name, description, thumbnail, homepage, wiki, comics } = char;
+  const { name, description, thumbnail, homepage, wiki, comics, comicsId } = char;
 
   let styleImg = { objectFit: "cover" };
   if (
@@ -89,9 +90,11 @@ const View = ({ char }) => {
           // eslint-disable-next-line
           if (i > 9) return;
           return (
-            <li className="char__comics-item" key={i}>
-              {item.name}
-            </li>
+            <Link to={`comics/${comicsId[i]}`} key={i}>
+              <li className="char__comics-item">
+                {item.name}
+              </li>
+            </Link>
           );
         })}
       </ul>
