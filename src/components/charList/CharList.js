@@ -32,6 +32,12 @@ const CharList = (props) => {
   };
 
   const onCharListLoaded = (newCharList) => {
+
+
+    // only for TEST DYNAMIC IMPORT FOR JS VANILA
+    // const {logger, logger2} = await import('./test');
+    // logger2();
+
     let ended = false;
     if (newCharList.length < 9) {
       ended = true;
@@ -102,6 +108,15 @@ const CharList = (props) => {
 
   const errorMessage = error ? <ErrorMessage /> : null;
   const spinner = loading && !newItemLoading ? <Spinner /> : null;
+
+
+  // test to dynamic import FOR JS VANILA!!!!!
+  /* if(loading){
+    import('./test')
+     // .then(obj => obj.logger())  non defaul export
+     .then(obj => obj.default())  // defaul export
+      .catch(e=>console.log(e.message))
+  } */
 
   return (
     <div className="char__list">
