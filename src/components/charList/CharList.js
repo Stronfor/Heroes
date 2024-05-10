@@ -1,10 +1,26 @@
 import "./charList.scss";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import PropTypes from "prop-types";
 
 import useMarvelService from "../../services/MarvelService";
-import Spinner from "../spinner/spinner";
-import ErrorMessage from "../errorMessage/ErrorMessage";
+
+import Spinner from "../spinner/spinner"
+import ErrorMessage from "../errorMessage/ErrorMessage"
+
+const setContent = (process, Component, newItemLoading) => {
+  switch(process){
+    case "waiting":
+      return <Spinner />;
+    case "loading":
+      return newItemLoading ? <Component /> : <Spinner />;
+    case "confirmed":
+      return <Component />
+    case "error":
+      return <ErrorMessage/>;
+    default:
+      throw new Error("Unexpected process state");
+  }
+}
 
 const CharList = (props) => {
   
@@ -13,12 +29,10 @@ const CharList = (props) => {
   const [offset, setOffset] = useState(210); // от этого числа отталкиваюсь при подгрузке новых персов
   const [charEnded, setCharEnded] = useState(false); //отслежка окончания массива с персами на сервере
 
-  const {loading, error, getAllCharacters} = useMarvelService();
+  const {process, setProcess, getAllCharacters} = useMarvelService();
 
   useEffect(() => {
-    onRequest(offset, true);
-    console.log('CHAR');
-    
+    onRequest(offset, true);    
   }, []);
 
   ///////////////
@@ -29,6 +43,7 @@ const CharList = (props) => {
     
     getAllCharacters(offset)
       .then(onCharListLoaded)
+      .then(() => setProcess("confirmed"));
   };
 
   const onCharListLoaded = (newCharList) => {
@@ -104,12 +119,6 @@ const CharList = (props) => {
     return <ul className="char__grid">{items}</ul>;
   };
 
-  const items = renderItems(charList);
-
-  const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading && !newItemLoading ? <Spinner /> : null;
-
-
   // test to dynamic import FOR JS VANILA!!!!!
   /* if(loading){
     import('./test')
@@ -118,11 +127,13 @@ const CharList = (props) => {
       .catch(e=>console.log(e.message))
   } */
 
+  const elements = useMemo(() => {
+    return setContent(process, ()=> renderItems(charList), newItemLoading)
+  }, [process])
+
   return (
     <div className="char__list">
-      {errorMessage}
-      {spinner}
-      {items}
+      {elements}
       <button
         className="button button__main button__long"
         disabled={newItemLoading}

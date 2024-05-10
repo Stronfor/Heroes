@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import Spinner from "../spinner/spinner";
-import ErrorMessage from "../errorMessage/ErrorMessage";
+
 import useMarvelService from "../../services/MarvelService";
+import setContent from "../../utils/setContent";
 
 import "./randomChar.scss";
 import mjolnir from "../../resources/img/mjolnir.png";
 
 const RandomChar = (props) => {
 
-  const {loading, getCharacter, error, clearError} = useMarvelService(); // чтобы работать с классами нужно создать его новый екзэмпляр
+  const { process, setProcess, getCharacter, clearError} = useMarvelService(); // чтобы работать с классами нужно создать его новый екзэмпляр
 
   const [char, setChar] = useState({});
 
@@ -28,18 +28,14 @@ const RandomChar = (props) => {
 
     getCharacter(id)
       .then(onCharLoaded)
+      .then(()=> setProcess("confirmed"))
   };
 
-  // распредиление что и как загружать на страницу(одновр может быть что-то одно)
-  const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error) ? <View char={char} /> : null; // НЕ loading и НЕ ошибка тогда = контент
+ 
 
   return (
     <div className="randomchar">
-      {errorMessage}
-      {spinner}
-      {content}
+      {setContent(process, View, char)}
       <div className="randomchar__static">
         <p className="randomchar__title">
           Random character for today!
@@ -58,8 +54,8 @@ const RandomChar = (props) => {
 }
 
 // рендорящий компонент(в нем нет никакой логики)
-const View = ({ char }) => {
-  const { name, description, thumbnail, homepage, wiki } = char;
+const View = ({ data }) => {
+  const { name, description, thumbnail, homepage, wiki } = data;
 
   // фикс бага для залушки без картинки (вписать в блок методом изменением стилей)
   let imgStyle = { objectFit: "cover" };

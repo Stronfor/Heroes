@@ -3,22 +3,19 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 
 import useMarvelService from "../../services/MarvelService";
-import Spinner from "../spinner/spinner";
-import ErrorrMessage from "../errorMessage/ErrorMessage";
-import Skeleton from "../skeleton/Skeleton";
+import setContent from "../../utils/setContent";
+
 
 import "./charInfo.scss";
 
 const CharInfo = (props) => {
 
-  const {loading, error, getCharacter, clearError} = useMarvelService();
+  const { getCharacter, clearError, process, setProcess } = useMarvelService();
 
   const [char, setChar] = useState(null);
 
   useEffect(()=> {
     updateChar();
-    console.log('CharInfo', props.charId);
-    
   }, [props.charId]);
 
 
@@ -31,6 +28,7 @@ const CharInfo = (props) => {
     clearError();
     getCharacter(charId)
       .then(onCharLoaded)
+      .then(()=> setProcess('confirmed'));
   };
 
   //загрузка данных перса в state: char
@@ -38,25 +36,28 @@ const CharInfo = (props) => {
     setChar(char);
   };
 
-  const skeleton = char || loading || error ? null : <Skeleton />; // заглушка на всякий случай
-
-  const errorMessage = error ? <ErrorrMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(error || loading || !char) ? <View char={char} /> : null;
+ 
+  // const skeleton = char || loading || error ? null : <Skeleton />; // заглушка на всякий случай
+  // const errorMessage = error ? <ErrorrMessage /> : null;
+  // const spinner = loading ? <Spinner /> : null;
+  // const content = !(error || loading || !char) ? <View char={char} /> : null;
 
   return (
     <div className="char__info">
-      {skeleton}
+     {/*  {skeleton}
       {errorMessage}
       {spinner}
-      {content}
+      {content} */}
+
+      {/* i USe there consept to FINITE-STATE MACHINE */}
+      {setContent(process, View, char)}
     </div>
   );
 }
 
 // так как СЛИШКОМ много верстки ДЕЛИМ ее не 2 компонента. 1 - отвечает за ЛОГИКУ. 2 - ЗА отображение
-const View = ({ char }) => {
-  const { name, description, thumbnail, homepage, wiki, comics, comicsId } = char;
+const View = ({ data }) => {
+  const { name, description, thumbnail, homepage, wiki, comics, comicsId } = data;
 
   let styleImg = { objectFit: "cover" };
   if (
